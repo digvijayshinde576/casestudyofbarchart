@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    .bar {
+      display: inline-block;
+      margin-right: 72px;
+      background-color: #db3934;
+    }
+  </style>
+  <title>Sorting Algorithm Visualizer</title>
+</head>
+<body>
+
+<div id="bars-container"></div>
+<button onclick="randomizeArray()">Randomize Array</button>
+<button onclick="selectionSort()">Selection Sort</button>
+<button onclick="bubbleSort()">Bubble Sort</button>
+<button onclick="insertionSort()">Insertion Sort</button>
+<button onclick="quickSort()">Quick Sort</button>
+<button onclick="mergeSort()">Merge Sort</button>
+<button onclick="shellSort()">Shell Sort</button>
+<button onclick="changeSize()">Change Size</button>
+
+<script>
+  let array = generateRandomArray(); // Initial array
+
+  function generateRandomArray(size = 5) {
+    return Array.from({ length: size }, () => Math.floor(Math.random() * 100) + 1);
+  }
+
+  function generateBars() {
+    const barsContainer = document.getElementById("bars-container");
+    barsContainer.innerHTML = "";
+    for (let value of array) {
+      const bar = document.createElement("div");
+      bar.className = "bar";
+      bar.style.height = value + "px";
+      barsContainer.appendChild(bar);
+    }
+  }
+  
+
+
+  function randomizeArray() {
+    array = generateRandomArray();
+    generateBars();
+  }
+
+  
+  function selectionSort() {
+    for (let i = 0; i < array.length - 1; i++) {
+      let minIndex = i;
+      for (let j = i + 1; j < array.length; j++) {
+        if (array[j] < array[minIndex]) {
+          minIndex = j;
+        }
+      }
+      if (minIndex !== i) {
+        let temp = array[i];
+        array[i] = array[minIndex];
+        array[minIndex] = temp;
+        updateVisualization();
+      }
+    }
+  }
+
+  function bubbleSort() {
+    for (let i = 0; i < array.length - 1; i++) {
+      for (let j = 0; j < array.length - i - 1; j++) {
+        if (array[j] > array[j + 1]) {
+          let temp = array[j];
+          array[j] = array[j + 1];
+          array[j + 1] = temp;
+          updateVisualization();
+        }
+      }
+    }
+  }
+
+  function insertionSort() {
+    for (let i = 1; i < array.length; i++) {
+      let key = array[i];
+      let j = i - 1;
+      while (j >= 0 && array[j] > key) {
+        array[j + 1] = array[j];
+        j = j - 1;
+      }
+      array[j + 1] = key;
+      updateVisualization();
+    }
+  }
+
+
+  function quickSort() {
+    function partition(low, high) {
+      let pivot = array[high];
+      let i = low - 1;
+      for (let j = low; j < high; j++) {
+        if (array[j] < pivot) {
+          i++;
+          let temp = array[i];
+          array[i] = array[j];
+          array[j] = temp;
+        }
+      }
+      let temp = array[i + 1];
+      array[i + 1] = array[high];
+      array[high] = temp;
+      return i + 1;
+    }
+
+    function quickSortHelper(low, high) {
+      if (low < high) {
+        let pi = partition(low, high);
+        quickSortHelper(low, pi - 1);
+        quickSortHelper(pi + 1, high);
+      }
+    }
+
+    quickSortHelper(0, array.length - 1);
+    updateVisualization();
+  }
+
+  function mergeSort() {
+    function merge(left, right) {
+      let result = [];
+      let i = 0, j = 0;
+
+      while (i < left.length && j < right.length) {
+        if (left[i] < right[j]) {
+          result.push(left[i++]);
+        } else {
+          result.push(right[j++]);
+        }
+      }
+
+      return result.concat(left.slice(i), right.slice(j));
+    }
+
+    function mergeSortHelper(arr) {
+      if (arr.length <= 1) {
+        return arr;
+      }
+
+      const middle = Math.floor(arr.length / 2);
+      const left = arr.slice(0, middle);
+      const right = arr.slice(middle);
+
+      return merge(mergeSortHelper(left), mergeSortHelper(right));
+    }
+
+    array = mergeSortHelper(array);
+    updateVisualization();
+  }
+
+  function shellSort() {
+    let n = array.length;
+    for (let gap = Math.floor(n / 2); gap > 0; gap = Math.floor(gap / 2)) {
+      for (let i = gap; i < n; i++) {
+        let temp = array[i];
+        let j;
+        for (j = i; j >= gap && array[j - gap] > temp; j -= gap) {
+          array[j] = array[j - gap];
+        }
+        array[j] = temp;
+      }
+      updateVisualization();
+    }
+  }
+
+  function changeSize() {
+    array = generateRandomArray();
+    generateBars();
+  }
+
+  function updateVisualization() {
+    setTimeout(generateBars, 500); // Add delay for visualization
+  }
+
+   generateBars(); // Initial visualization
+</script>
+
+</body>
+</html>
